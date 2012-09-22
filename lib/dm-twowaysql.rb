@@ -38,7 +38,7 @@ module DataMapper
 
       # @api public
       def select(statement, *bind_values)
-        if statement.instance_of?(TwoWaySQL::Template)
+        if statement.instance_of?(::TwoWaySQL::Template)
           # twowaysql select
           template, data = [statement, bind_values[0]]
           merged = template.merge(data)
