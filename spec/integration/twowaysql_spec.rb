@@ -26,9 +26,14 @@ describe 'DataMapper::TwoWaySQL' do
   end
 
   describe "#twowaysql :find" do
-    it "should define twowaysql_find method" do
-      Employee.respond_to?(:twowaysql_find).should be_true
-      Mushroom.respond_to?(:twowaysql_find).should be_true
+    it "should define tempalte_find method" do
+      Employee.respond_to?(:template_find).should be_true
+      Mushroom.respond_to?(:template_find).should be_true
+    end
+
+    it "should define select_find method" do
+      Employee.respond_to?(:select_find).should be_true
+      Mushroom.respond_to?(:select_find).should be_true
     end
 
     it "raise error when passed duplicate name" do
@@ -40,15 +45,15 @@ describe 'DataMapper::TwoWaySQL' do
       end.should raise_error
     end
 
-    describe "#twowaysql_find" do
+    describe "#template_find" do
       it "should return object instance_of ::TwoWaySQL::Template" do
-        Employee.twowaysql_find.should be_instance_of(::TwoWaySQL::Template)
-        Mushroom.twowaysql_find.should be_instance_of(::TwoWaySQL::Template)
+        Employee.template_find.should be_instance_of(::TwoWaySQL::Template)
+        Mushroom.template_find.should be_instance_of(::TwoWaySQL::Template)
       end
 
       it "should return " do
-        Employee.twowaysql_find.merge({}).sql.should eql("      SELECT * FROM emp\n      \n      \n")
-        Mushroom.twowaysql_find.merge({}).sql.should eql("      SELECT * FROM mushrooms\n      \n")
+        Employee.template_find.merge({}).sql.should eql("      SELECT * FROM emp\n      \n      \n")
+        Mushroom.template_find.merge({}).sql.should eql("      SELECT * FROM mushrooms\n      \n")
       end
     end
   end
