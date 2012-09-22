@@ -12,23 +12,21 @@ module DataMapper
     module ClassMethods
 
       # @api public
-      def twowaysql(name, sql_io = nil, opts = {})
-        variable_name = "@twowaysql_#{name}"
+      def twowaysql(execute_type, name, sql_io, opts = {})
+        variable_name = "@twowaysql_template_#{execute_type}_#{name}"
         raise "#{variable_name} is already defined." if instance_variable_defined? variable_name
+        raise "#{execute_type} is not :select or :execute" unless [:select, :execute].include?(execute_type)
         instance_variable_set(variable_name, ::TwoWaySQL::Template.parse(sql_io, opts))
 
-        template_getter = "self.template_#{name}"
+        template_getter = "self.template_#{execute_type}_#{name}"
         self.class_eval <<-RUBY, __FILE__, __LINE__ + 1
           def #{template_getter}
             instance_variable_get "#{variable_name}"
           end
-        RUBY
 
-        select_method = "self.select_#{name}"
-        self.class_eval <<-RUBY, __FILE__, __LINE__ + 1
-          def #{select_method}(repository_name, data)
+          def self.#{execute_type}_#{name}(repository_name, data)
             merged = #{template_getter}.merge(data)
-            ::DataMapper.repository(repository_name).adapter.select(merged.sql, *merged.bound_variables)
+            ::DataMapper.repository(repository_name).adapter.#{execute_type}(merged.sql, *merged.bound_variables)
           end
         RUBY
 
